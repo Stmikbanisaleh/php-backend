@@ -27,30 +27,36 @@ class Auth extends CI_Controller
     {
         $email = $this->input->post('email');
         $password = $this->input->post('password');
-
-        $user = $this->db->get_where('msuser', ['email' => $email])->row_array();
-
-        if ($user) {
-            //cek password
-            if (1>0) {
+        $data = array(
+            'email' => $email,
+            'password' => $password
+        );
+        $user = $this->lapan_api_library->call('users/login', $data);
+        $user = $user['data'];
+        if ($user['status'] == 200) {
+            if ($user['token']) {
                 $data = [
                     'email' => $user['email'],
-                    'role_id' => $user['role_id']
+                    'role_id' => $user['role'],
+                    'user_id' => $user['user_id'],
+                    'name' => $user['name'],
+                    'is_active' => $user['is_active'],
+                    'name_rev' => $user['nama_rev'],
+                    'status' => $user['status_rev'],
+                    'keterangan' => $user['keterangan'],
+                    'golongan' => $user['golongan'],
+                    'token' => $user['token']
                 ];
                 $this->session->set_userdata($data);
+                // echo "berhasil";
                 redirect('dashboard');
-            } else {
-                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-                    Password salah!</div>');
-                redirect('auth');
             }
         } else {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
-            Email belum terdaftar</div>');
+                            Password salah!</div>');
             redirect('auth');
         }
     }
-
     public function logout()
     {
         $this->session->unset_userdata('email');

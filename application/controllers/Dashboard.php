@@ -14,9 +14,15 @@ class Dashboard extends CI_Controller
     public function index()
     {
         $this->load->model('Dashboard_model', 'dashboard');
-        $data['jumlahBerita'] = $this->dashboard->JumlahBerita();
-        $data['jumlahSop'] = $this->dashboard->JumlahSop();
-        $data['jumlahMenu'] = $this->dashboard->JumlahMenu();
+        
+        // print_r($this->session->userdata('token'));exit;
+        $jmlberita = $this->lapan_api_library->call('dashboard/berita',['token' => $this->session->userdata('token')]);
+        $jmlsop = $this->lapan_api_library->call('dashboard/sop',['token' => $this->session->userdata('token')]);
+        $jmlmenu = $this->lapan_api_library->call('dashboard/menu',['token' => $this->session->userdata('token')]);
+
+        $data['jumlahBerita'] = $jmlberita;
+        $data['jumlahSop'] = $jmlsop;
+        $data['jumlahMenu'] = $jmlmenu;
 
         $this->load->view('template/header');
         $this->load->view('dashboard', $data);
