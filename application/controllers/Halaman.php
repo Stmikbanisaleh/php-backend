@@ -17,9 +17,8 @@ class Halaman extends CI_Controller
     {
         $data['title'] = "Halaman Statis";
         $data['icon'] = "layout";
-
-        $data['halaman'] = $this->m_halaman->getHalaman();
-
+        $halaman = $this->lapan_api_library->call('halaman/gethalaman', ['token' => $this->session->userdata('token')]);
+        $data['halaman'] = $halaman['rows'];
         $this->load->view('template/header.php');
         $this->load->view('halaman/index', $data);
         $this->load->view('template/footer.php');
@@ -37,7 +36,43 @@ class Halaman extends CI_Controller
             $this->load->view('halaman/add', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_halaman->addHalaman();
+            $file_tmp = $_FILES['gambar']['tmp_name'];
+            if (!empty($_FILES['gambar']['tmp_name']) && file_exists($_FILES['gambar']['tmp_name'])) {
+                $filename = $_FILES['gambar']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['gambar']['name'];
+                $ext = explode('.', $type);
+				$type = end($ext);
+                $data_getcontent = file_get_contents($_FILES['gambar']['tmp_name']);
+                $gambar_base64 = base64_encode($data_getcontent);
+                
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
+                    'isi_halaman' => $this->input->post('isi_halaman', true),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'gambar' => $filename,
+                    'gambar_base64' => $gambar_base64,
+                    'gambar_type' => $type,
+                    'username' => 'admin',
+                    'token' => $this->session->userdata('token')
+                ];
+                // print_r($data);exit;
+            } else {
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
+                    'isi_halaman' => $this->input->post('isi_halaman', true),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'gambar' => null,
+                    'gambar_base64' => null,
+                    'gambar_type' => null,
+                    'username' => 'admin',
+                    'token' => $this->session->userdata('token')
+                ];
+            }
+            $insert = $this->lapan_api_library->call('halaman/addhalaman', $data);
+            // print_r($insert);exit;
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Halaman telah ditambahkan!</div>');
             redirect('Halaman');
@@ -70,7 +105,7 @@ class Halaman extends CI_Controller
 
     function delete($id)
     {
-        $this->m_halaman->deletehalaman($id);
+        $response = $this->lapan_api_library->call('halaman/deletehalaman', ['token' => $this->session->userdata('token'), 'id_halaman' => $id]);
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             halaman telah dihapus!</div>');
         redirect('halaman');
