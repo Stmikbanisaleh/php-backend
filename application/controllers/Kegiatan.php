@@ -159,11 +159,11 @@ class Kegiatan extends CI_Controller
         if ($kegiatan['status'] == 200) {
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             Kegiatan telah dihapus!</div>');
-            redirect('berita');
+            redirect('kegiatan');
         } else {
             $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
             Kegiatan gagal dihapus!</div>');
-            redirect('berita');
+            redirect('kegiatan');
         }
     }
 }
