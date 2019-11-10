@@ -37,7 +37,7 @@
                                         <td><?= $brt['nama_kegiatan']; ?></td>
                                         <td><?= $brt['tempat']; ?></td>
                                         <td><?= date('d-m-Y', strtotime($brt['tanggal'])) ?></td>
-                                        <td><img src="../assets/img_kegiatan/<?= $brt['gambar']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
+                                        <td><img src="<?=URL_API_DOWNLOAD . $brt['gambar']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
                                         <td>
                                             <a href="<?= base_url('kegiatan/edit/') . $brt['id_kegiatan']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default edit-row" data-toggle="tooltip" data-original-title="Edit"><i class="icon wb-edit" aria-hidden="true"></i></a>
                                             <a href="<?= base_url('kegiatan/delete/') . $brt['id_kegiatan']; ?>" onclick="return confirm('Anda yakin ingin menghapus?');" class="btn btn-sm btn-icon btn-pure btn-default on-default remove-row" data-toggle="tooltip" data-original-title="Remove" onclick="return confirm('Anda yakin ingin menghapus?');"><i class="icon wb-trash" aria-hidden="true"></i></a>
