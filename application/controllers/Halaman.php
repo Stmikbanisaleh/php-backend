@@ -63,9 +63,6 @@ class Halaman extends CI_Controller
                     'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
                     'isi_halaman' => $this->input->post('isi_halaman', true),
                     'tgl_posting' => date('Y-m-d h:i:s'),
-                    'gambar' => null,
-                    'gambar_base64' => null,
-                    'gambar_type' => null,
                     'username' => 'admin',
                     'token' => $this->session->userdata('token')
                 ];
@@ -124,9 +121,6 @@ class Halaman extends CI_Controller
                     'judul' => htmlspecialchars($this->input->post('judul', true)),
                     'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
                     'isi_halaman' => $this->input->post('isi_halaman', true),
-                    'gambar' => null,
-                    'gambar_base64' => null,
-                    'gambar_type' => null,
                     'username' => htmlspecialchars($this->input->post('username', true)),
                     'token' => $this->session->userdata('token'),
                     'id_halaman' => $id

@@ -107,6 +107,8 @@ class Agenda extends CI_Controller
                     'tanggal_awal' => date('Y-m-d', strtotime($this->input->post('tanggal_awal'))),
                     'tanggal_akhir' => date('Y-m-d', strtotime($this->input->post('tanggal_akhir'))),
                     'foto' => $this-> $filename,
+                    'gambar_base64' => $gambar_base64,
+                    'gambar_type' => $type,
                     'token' => $this->session->userdata('token'),
                     'id_agenda' => $id
                 ];

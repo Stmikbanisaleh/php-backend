@@ -66,9 +66,6 @@ class Kegiatan extends CI_Controller
                     'id_posisi' => $this->input->post('id_posisi', true),
                     'nama_kegiatan' => htmlspecialchars($this->input->post('nama_kegiatan', true)),
                     'tempat' => htmlspecialchars($this->input->post('tempat', true)),
-                    'gambar' => null,
-                    'gambar_base64' => null,
-                    'gambar_type' => null,
                     'tanggal' => date('Y-m-d', strtotime($this->input->post('tanggal'))),
                     'token' => $this->session->userdata('token')
                 ];
