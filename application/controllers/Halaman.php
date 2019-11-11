@@ -42,10 +42,10 @@ class Halaman extends CI_Controller
                 $filename = pathinfo($filename, PATHINFO_FILENAME);
                 $type = $_FILES['gambar']['name'];
                 $ext = explode('.', $type);
-				$type = end($ext);
+                $type = end($ext);
                 $data_getcontent = file_get_contents($_FILES['gambar']['tmp_name']);
                 $gambar_base64 = base64_encode($data_getcontent);
-                
+
                 $data = [
                     'judul' => htmlspecialchars($this->input->post('judul', true)),
                     'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
@@ -57,16 +57,12 @@ class Halaman extends CI_Controller
                     'username' => 'admin',
                     'token' => $this->session->userdata('token')
                 ];
-                // print_r($data);exit;
             } else {
                 $data = [
                     'judul' => htmlspecialchars($this->input->post('judul', true)),
                     'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
                     'isi_halaman' => $this->input->post('isi_halaman', true),
                     'tgl_posting' => date('Y-m-d h:i:s'),
-                    'gambar' => null,
-                    'gambar_base64' => null,
-                    'gambar_type' => null,
                     'username' => 'admin',
                     'token' => $this->session->userdata('token')
                 ];
@@ -82,10 +78,14 @@ class Halaman extends CI_Controller
     public function edit($id)
     {
 
-        $data['title'] = "Edit halaman";
-
-        $data['halaman'] = $this->m_halaman->getHalamanById($id);
+        $data = [
+            'id_halaman' => $id,
+            'token' => $this->session->userdata('token')
+        ];
+        $gethalamanbyid = $this->lapan_api_library->call('halaman/gethalamanbyid', $data);
+        $data['halaman'] = $gethalamanbyid['rows'][0];
         $data['status_aktif'] = ['Ya', 'Tidak'];
+        $data['title'] = "Edit halaman";
 
         $this->form_validation->set_rules('judul', 'Judul', 'required');
         $this->form_validation->set_rules('judul_seo', 'Judul Seo', 'required');
@@ -96,10 +96,46 @@ class Halaman extends CI_Controller
             $this->load->view('halaman/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_halaman->edithalaman();
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-            halaman telah diubah!</div>');
-            redirect('halaman');
+            if (!empty($_FILES['gambar']['tmp_name']) && file_exists($_FILES['gambar']['tmp_name'])) {
+                $filename = $_FILES['gambar']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['gambar']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($_FILES['gambar']['tmp_name']);
+                $gambar_base64 = base64_encode($data_getcontent);
+
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
+                    'isi_halaman' => $this->input->post('isi_halaman', true),
+                    'gambar' => $filename,
+                    'gambar_base64' => $gambar_base64,
+                    'gambar_type' => $type,
+                    'username' => htmlspecialchars($this->input->post('username', true)),
+                    'token' => $this->session->userdata('token'),
+                    'id_halaman' => $id
+                ];
+            } else {
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'judul_seo' => htmlspecialchars($this->input->post('judul_seo', true)),
+                    'isi_halaman' => $this->input->post('isi_halaman', true),
+                    'username' => htmlspecialchars($this->input->post('username', true)),
+                    'token' => $this->session->userdata('token'),
+                    'id_halaman' => $id
+                ];
+            }
+            $update = $this->lapan_api_library->call('halaman/updatehalaman', $data);
+            if($update['status'] == 200){
+                $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                halaman telah diubah!</div>');
+                redirect('halaman');
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                halaman Gagal diubah!</div>');
+                redirect('halaman');
+            }
         }
     }
 

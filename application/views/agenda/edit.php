@@ -22,7 +22,9 @@
                         <div class=" form-group row">
                             <label class="col-md-3 form-control-label">Keterangan</label>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" name="keterangan" placeholder="Keterangan" value="<?= $agenda['nama_agenda']; ?>" />
+                                <!-- <textarea   input type="text"  class="form-control" data-plugin="summernote" name="keterangan" placeholder="Keterangan" value="<?php echo $agenda['nama_agenda']; ?>" ></textarea>
+                                <small class="form-text text-danger"><?= form_error('keterangan'); ?></small> -->
+                                <textarea input type="text" data-plugin="summernote"  name="keterangan" id="keterangan" class="form-control"><?= $agenda['keterangan']; ?></textarea>
                                 <small class="form-text text-danger"><?= form_error('keterangan'); ?></small>
                             </div>
                         </div>
@@ -44,7 +46,7 @@
                             <label class="col-md-3 form-control-label">Foto</label>
                             <div class="col-md-9 row">
                                 <div class="col-md-4 mt-5">
-                                    <img class="w-120 img-thumbnail" src="../../../assets/img_agenda/<?= $agenda['foto']; ?>" alt="Relevant textual alternative to the image">
+                                    <img class="w-120 img-thumbnail" src="<?= URL_API_DOWNLOAD . $agenda['foto']; ?>" alt="Relevant textual alternative to the image">
                                 </div>
                                 <div class="col-md-8 mt-5">
                                     <input type="file" id="foto" name="foto" data-plugin="dropify" data-height="65px" />

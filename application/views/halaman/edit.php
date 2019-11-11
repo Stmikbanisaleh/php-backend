@@ -37,7 +37,7 @@
                             <label class="col-md-3 form-control-label">Gambar</label>
                             <div class="col-md-9 row">
                                 <div class="col-md-4 mt-5">
-                                    <img class="w-120 img-thumbnail" src=" ../../assets/img_halaman/<?= $halaman['gambar']; ?>"> </div>
+                                    <img class="w-120 img-thumbnail" src=" <?= URL_API_DOWNLOAD . $halaman['gambar']; ?>"> </div>
                                 <div class="col-md-8 mt-5">
                                     <input type="file" id="gambar" name="gambar" data-plugin="dropify" data-height="65px" />
                                     <input type="hidden" id="gambar_lama" name="gambar_lama" value="<?= $halaman['gambar']; ?>" />

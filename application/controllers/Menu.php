@@ -70,12 +70,17 @@ class Menu extends CI_Controller
     public function edit($id)
     {
 
-        $data['title'] = "Edit Menu";
-
-        $data['menu'] = $this->m_menu->getMenuById($id);
+        $data = [
+            'id_menu' =>$id,
+            'token' => $this->session->userdata('token')
+        ];
+        $getmenubyid = $this->lapan_api_library->call('menu/getmenubyid', $data);
+        $posisi = $this->lapan_api_library->call('menu/getposisi', ['token' => $this->session->userdata('token')]);
+        $data['menu'] = $getmenubyid['rows'][0];
         $data['status_aktif'] = ['Ya', 'Tidak'];
         $data['sub_menu'] = ['Ya', 'Tidak'];
-        $data['posisi'] = $this->m_menu->getPosisi();
+        $data['posisi'] = $posisi[0];
+        $data['title'] = "Edit Menu";
 
         $this->form_validation->set_rules('nama_menu', 'Nama Menu', 'required');
         $this->form_validation->set_rules('link', 'Link', 'required');
@@ -86,10 +91,28 @@ class Menu extends CI_Controller
             $this->load->view('menu/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_menu->editMenu();
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-            Menu telah diubah!</div>');
-            redirect('Menu');
+            $data = [
+                'id_posisi' => $this->input->post('id_posisi', true),
+                'id_parent' => $this->input->post('id_parent', true),
+                'nama_menu' => htmlspecialchars($this->input->post('nama_menu', true)),
+                'link' => htmlspecialchars($this->input->post('link', true)),
+                'punya_sub' => $this->input->post('punya_sub', true),
+                'status_aktif' => $this->input->post('status_aktif', true),
+                'urutan' => htmlspecialchars($this->input->post('urutan', true)),
+                'token' => $this->session->userdata('token'),
+                'id_menu' => $id
+            ];
+            $update = $this->lapan_api_library->call('menu/updatemenu',$data);
+            if($update['status'] == 200) {
+                $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                Menu telah diubah!</div>');
+                redirect('Menu');
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                Menu Gagal diubah!</div>');
+                redirect('Menu');
+            }
+        
         }
     }
 

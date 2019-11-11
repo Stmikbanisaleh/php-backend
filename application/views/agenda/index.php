@@ -37,7 +37,7 @@
                                         <td><?= $ag['keterangan']; ?></td>
                                         <td><?= date('d-m-Y', strtotime($ag['tanggal_awal'])); ?></td>
                                         <td><?= date('d-m-Y', strtotime($ag['tanggal_akhir'])); ?></td>
-                                        <td><img src="../assets/img_agenda/<?= $ag['foto']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
+                                        <td><img src="<?= URL_API_DOWNLOAD . $ag['foto']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
                                         <td>
                                             <a href="<?= base_url('agenda/edit/') . $ag['id_agenda']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default edit-row" data-toggle="tooltip" data-original-title="Edit"><i class="icon wb-edit" aria-hidden="true"></i></a>
                                             <a href="<?= base_url('agenda/delete/') . $ag['id_agenda']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default remove-row" data-toggle="tooltip" data-original-title="Remove" onclick="return confirm('Anda yakin ingin menghapus?');"><i class="icon wb-trash" aria-hidden="true"></i></a>

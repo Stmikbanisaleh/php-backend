@@ -55,7 +55,7 @@
                             <label class="col-md-3 form-control-label">Gambar</label>
                             <div class="col-md-9 row">
                                 <div class="col-md-4 mt-5">
-                                    <img class="w-120 img-thumbnail" src=" ../../../assets/img_kegiatan/<?= $kegiatan['gambar']; ?>" alt="<?= $kegiatan['gambar']; ?>">
+                                    <img class="w-120 img-thumbnail" src="<?= URL_API_DOWNLOAD . $kegiatan['gambar']; ?>" alt="<?= $kegiatan['gambar']; ?>">
                                 </div>
                                 <div class="col-md-8 mt-5">
                                     <input type="file" id="gambar" name="gambar" data-plugin="dropify" data-height="65px" />

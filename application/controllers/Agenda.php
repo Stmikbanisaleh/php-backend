@@ -17,8 +17,8 @@ class Agenda extends CI_Controller
     {
         $data['title'] = "Agenda";
         $data['icon'] = "extension";
-
-        $data['agenda'] = $this->m_agenda->getagenda();
+        $agenda = $this->lapan_api_library->call('agenda/getagenda', ['token' => $this->session->userdata('token')]);
+        $data['agenda'] = $agenda[0];
 
         $this->load->view('template/header.php');
         $this->load->view('agenda/index', $data);
@@ -38,10 +38,45 @@ class Agenda extends CI_Controller
             $this->load->view('agenda/add', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_agenda->addagenda();
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-            agenda telah ditambahkan!</div>');
-            redirect('agenda');
+            if (!empty($_FILES['foto']['tmp_name']) && file_exists($_FILES['foto']['tmp_name'])) {
+                $filename = $_FILES['foto']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['foto']['name'];
+                $ext = explode('.', $type);
+				$type = end($ext);
+                $data_getcontent = file_get_contents($_FILES['foto']['tmp_name']);
+                $gambar_base64 = base64_encode($data_getcontent);
+                
+                $data = [
+                    'nama_agenda' => htmlspecialchars($this->input->post('nama_agenda', true)),
+                    'keterangan' => htmlspecialchars($this->input->post('keterangan', true)),
+                    'tanggal_awal' => date('Y-m-d', strtotime($this->input->post('tanggal_awal'))),
+                    'tanggal_akhir' => date('Y-m-d', strtotime($this->input->post('tanggal_akhir'))),
+                    'foto' => $filename,
+                    'gambar_base64' => $gambar_base64,
+                    'gambar_type' => $type,
+                    'token' => $this->session->userdata('token')
+                ];
+            } else {
+                $data = [
+                    'nama_agenda' => htmlspecialchars($this->input->post('nama_agenda', true)),
+                    'keterangan' => htmlspecialchars($this->input->post('keterangan', true)),
+                    'tanggal_awal' => date('Y-m-d', strtotime($this->input->post('tanggal_awal'))),
+                    'tanggal_akhir' => date('Y-m-d', strtotime($this->input->post('tanggal_akhir'))),
+                    'token' => $this->session->userdata('token')
+                ];
+            }
+
+            $insert = $this->lapan_api_library->call('agenda/addagenda', $data);
+            if($insert['status'] == 200){
+                $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                Agenda telah ditambahkan!</div>');
+                redirect('agenda');
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                Agenda Gagal ditambahkan!</div>');
+                redirect('agenda');
+            }
         }
     }
 
@@ -49,30 +84,72 @@ class Agenda extends CI_Controller
     {
 
         $data['title'] = "Edit agenda";
-
-        $data['agenda'] = $this->m_agenda->getagendaById($id);
-
+        $agenda = $this->lapan_api_library->call('agenda/getagendabyid', ['token' => $this->session->userdata('token'),'id_agenda' => $id]);
+        $data['agenda'] = $agenda['rows'][0];
         $this->form_validation->set_rules('nama_agenda', 'Nama agenda', 'required');
         $this->form_validation->set_rules('keterangan', 'keterangan', 'required');
-
         if ($this->form_validation->run() == false) {
-
             $this->load->view('template/header.php');
             $this->load->view('agenda/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_agenda->editagenda();
-            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-            agenda telah diubah!</div>');
-            redirect('agenda');
+            if (!empty($_FILES['foto']['tmp_name']) && file_exists($_FILES['foto']['tmp_name'])) {
+                $filename = $_FILES['foto']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['foto']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($_FILES['foto']['tmp_name']);
+                $gambar_base64 = base64_encode($data_getcontent);
+                $data = [
+                    'nama_agenda' => htmlspecialchars($this->input->post('nama_agenda', true)),
+                    'keterangan' => htmlspecialchars($this->input->post('keterangan', true)),
+                    'tanggal_awal' => date('Y-m-d', strtotime($this->input->post('tanggal_awal'))),
+                    'tanggal_akhir' => date('Y-m-d', strtotime($this->input->post('tanggal_akhir'))),
+                    'foto' => $this-> $filename,
+                    'gambar_base64' => $gambar_base64,
+                    'gambar_type' => $type,
+                    'token' => $this->session->userdata('token'),
+                    'id_agenda' => $id
+                ];
+            } else {
+                $data = [
+                    'nama_agenda' => htmlspecialchars($this->input->post('nama_agenda', true)),
+                    'keterangan' => htmlspecialchars($this->input->post('keterangan', true)),
+                    'tanggal_awal' => date('Y-m-d', strtotime($this->input->post('tanggal_awal'))),
+                    'tanggal_akhir' => date('Y-m-d', strtotime($this->input->post('tanggal_akhir'))),
+                    'token' => $this->session->userdata('token'),
+                    'id_agenda' => $id
+                ];
+            }
+            $update = $this->lapan_api_library->call('agenda/updateagenda', $data);
+            if ($update['status'] == 200) {
+                $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+                Agenda telah diubah!</div>');
+                redirect('agenda');
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                kegaitan Gagal diubah!</div>');
+                redirect('agenda');
+            }
         }
     }
 
     function delete($id)
     {
-        $this->m_agenda->deleteagenda($id);
-        $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
-            agenda telah dihapus!</div>');
-        redirect('agenda');
+        $data = [
+            'token' => $this->session->userdata('token'),
+            'id_agenda' => $id
+        ];
+        $agenda = $this->lapan_api_library->call('agenda/deleteagenda', $data);
+        if ($agenda['status'] == 200) {
+            $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
+            Agenda telah dihapus!</div>');
+            redirect('agenda');
+        } else {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+            Agenda gagal dihapus!</div>');
+            redirect('agenda');
+        }
     }
 }

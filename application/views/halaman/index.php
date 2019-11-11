@@ -35,7 +35,7 @@
                                         <td><?= $hlm['judul']; ?></td>
                                         <td><?= $hlm['judul_seo']; ?></td>
                                         <td><?= date('d-m-Y', strtotime($hlm['tgl_posting'])) ?></td>
-                                        <td><img src="<?= base_url('assets/img_halaman/') . $hlm['gambar']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
+                                        <td><img src="<?= URL_API_DOWNLOAD . $hlm['gambar']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
                                         <td>
                                             <a href="<?= base_url('Halaman/edit/') . $hlm['id_halaman']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default edit-row" data-toggle="tooltip" data-original-title="Edit"><i class="icon wb-edit" aria-hidden="true"></i></a>
                                             <a href="<?= base_url('Halaman/delete/') . $hlm['id_halaman']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default remove-row" data-toggle="tooltip" data-original-title="Remove" onclick="return confirm('Anda yakin ingin menghapus?');"><i class="icon wb-trash" aria-hidden="true"></i></a>
