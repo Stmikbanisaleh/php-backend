@@ -36,7 +36,7 @@
                                         <td><?= $dw['nama_file']; ?></td>
                                         <td><?= date('d-m-Y', strtotime($dw['tgl_posting'])); ?></td>
                                         <td>
-                                            <a href="../assets/arsip/<?= $dw['nama_file']; ?>" target="_blank" class="btn btn-xs btn-default"><i class="icon wb-download"></i></a>
+                                            <a href="<?= URL_API_DOWNLOAD . $dw['nama_file']; ?>" target="_blank" class="btn btn-xs btn-default"><i class="icon wb-download"></i></a>
                                         </td>
                                         <td>
                                             <a href="<?= base_url('Download/edit/') . $dw['id_download']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default edit-row" data-toggle="tooltip" data-original-title="Edit"><i class="icon wb-edit" aria-hidden="true"></i></a>

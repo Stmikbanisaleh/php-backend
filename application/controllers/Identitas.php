@@ -19,7 +19,8 @@ class Identitas extends CI_Controller
         $data['title'] = "Identitas";
         $data['icon'] = "info-circle";
 
-        $data['identitas'] = $this->m_identitas->getIdentitas();
+        $identitas = $this->lapan_api_library->call('identitas/getidentitas', ['token' => $this->session->userdata('token')]);
+        $data['identitas'] = $identitas['rows'];
 
         $this->load->view('template/header.php');
         $this->load->view('identitas/index', $data);
@@ -47,7 +48,24 @@ class Identitas extends CI_Controller
             $this->load->view('identitas/add', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_identitas->addidentitas();
+            $data = [
+                'token' => $this->session->userdata('token'),
+                'nama_website' => htmlspecialchars($this->input->post('nama_website', true)),
+                'email' => htmlspecialchars($this->input->post('email', true)),
+                'url' => htmlspecialchars($this->input->post('url', true)),
+                'satker' => htmlspecialchars($this->input->post('satker', true)),
+                'facebook' => htmlspecialchars($this->input->post('facebook', true)),
+                'google' => htmlspecialchars($this->input->post('google', true)),
+                'twitter' => htmlspecialchars($this->input->post('twitter', true)),
+                'rekening' => htmlspecialchars($this->input->post('rekening', true)),
+                'no_telp' => htmlspecialchars($this->input->post('no_telp', true)),
+                'meta_deskripsi' => htmlspecialchars($this->input->post('meta_deskripsi', true)),
+                'meta_keyword' => htmlspecialchars($this->input->post('meta_keyword', true)),
+                'favicon' => htmlspecialchars($this->input->post('favicon', true)),
+            ];
+
+            $insert = $this->lapan_api_library->call('identitas/addidentitas', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             identitas telah ditambahkan!</div>');
             redirect('identitas');
@@ -56,10 +74,15 @@ class Identitas extends CI_Controller
 
     public function edit($id)
     {
+        $data = [
+                'token' => $this->session->userdata('token'),
+                'id_identitas' => $id,
+            ];
+
+        $getbyid = $this->lapan_api_library->call('identitas/getidentitasbyid', $data);
+        $data['identitas'] = $getbyid['rows'][0];
 
         $data['title'] = "Edit identitas";
-
-        $data['identitas'] = $this->m_identitas->getIdentitasById($id);
 
         $this->form_validation->set_rules('nama_website', 'Nama Website', 'required');
         $this->form_validation->set_rules('email', 'email', 'required|valid_email');
@@ -80,7 +103,25 @@ class Identitas extends CI_Controller
             $this->load->view('identitas/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_identitas->editidentitas();
+            $data = [
+                'token' => $this->session->userdata('token'),
+                'nama_website' => htmlspecialchars($this->input->post('nama_website', true)),
+                'email' => htmlspecialchars($this->input->post('email', true)),
+                'url' => htmlspecialchars($this->input->post('url', true)),
+                'satker' => htmlspecialchars($this->input->post('satker', true)),
+                'facebook' => htmlspecialchars($this->input->post('facebook', true)),
+                'google' => htmlspecialchars($this->input->post('google', true)),
+                'twitter' => htmlspecialchars($this->input->post('twitter', true)),
+                'rekening' => htmlspecialchars($this->input->post('rekening', true)),
+                'no_telp' => htmlspecialchars($this->input->post('no_telp', true)),
+                'meta_deskripsi' => htmlspecialchars($this->input->post('meta_deskripsi', true)),
+                'meta_keyword' => htmlspecialchars($this->input->post('meta_keyword', true)),
+                'favicon' => htmlspecialchars($this->input->post('favicon', true)),
+                'id_identitas' => $this->input->post('id_identitas'),
+            ];
+
+            $update = $this->lapan_api_library->call('identitas/updateidentitas', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             identitas telah diubah!</div>');
             redirect('identitas');
@@ -89,7 +130,14 @@ class Identitas extends CI_Controller
 
     function delete($id)
     {
-        $this->m_identitas->deleteidentitas($id);
+        $data = [
+                'token' => $this->session->userdata('token'),
+                'id_identitas' => $id,
+            ];
+
+        $delete = $this->lapan_api_library->call('identitas/deleteidentitas', $data);
+
+
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             identitas telah dihapus!</div>');
         redirect('identitas');

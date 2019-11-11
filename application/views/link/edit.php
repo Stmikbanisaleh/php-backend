@@ -37,7 +37,7 @@
                             <label class="col-md-3 form-control-label">Logo</label>
                             <div class="col-md-9 row">
                                 <div class="col-md-4 mt-5">
-                                    <img class="w-120 img-thumbnail" src=" ../../assets/img_link/<?= $link['logo']; ?>">
+                                    <img class="w-120 img-thumbnail" src="<?= URL_API_DOWNLOAD . $link['logo']; ?>">
                                 </div>
                                 <div class="col-md-8 mt-5">
                                     <input type="file" id="logo" name="logo" data-plugin="dropify" data-height="65px" />

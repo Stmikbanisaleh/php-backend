@@ -32,7 +32,7 @@
                             <label class="col-md-3 form-control-label">File</label>
                             <div class="col-md-9 row">
                                 <div class="col-md-4 mt-5">
-                                    <a href="../../../assets/doc_sop/<?= $sop['nama_file']; ?>" target="_blank">
+                                    <a href="<?= URL_API_DOWNLOAD . $sop['nama_file']; ?>" target="_blank">
                                         <button type="button" class="btn btn-sm btn-primary">
                                             Lihat File
                                         </button>

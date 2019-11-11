@@ -19,7 +19,8 @@ class Sop extends CI_Controller
         $data['title'] = "SOP";
         $data['icon'] = "file";
 
-        $data['sop'] = $this->m_sop->getSop();
+        $sop = $this->lapan_api_library->call('sop/getsop', ['token' => $this->session->userdata('token')]);
+        $data['sop'] = $sop['rows'];
 
         $this->load->view('template/header');
         $this->load->view('sop/index', $data);
@@ -37,7 +38,40 @@ class Sop extends CI_Controller
             $this->load->view('sop/add', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_sop->addSop();
+            $file_tmp = $_FILES['nama_file']['tmp_name'];
+
+            if (!empty($file_tmp) && file_exists($file_tmp)) {
+                $filename = $_FILES['nama_file']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['nama_file']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($file_tmp);
+                $file_base64 = base64_encode($data_getcontent);
+
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'nama_judul' => htmlspecialchars($this->input->post('nama_judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'nama_file' => $filename,
+                    'file_base64' => $file_base64,
+                    'file_type' => $type,
+                    'token' => $this->session->userdata('token')
+                ];
+            }else{
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'nama_judul' => htmlspecialchars($this->input->post('nama_judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'nama_file' => null,
+                    'file_base64' => null,
+                    'file_type' => null,
+                    'token' => $this->session->userdata('token')
+                ];
+            }
+
+            $insert = $this->lapan_api_library->call('sop/addsop', $data);
+            
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             SOP telah ditambahkan!</div>');
             redirect('sop');
@@ -47,9 +81,15 @@ class Sop extends CI_Controller
     public function edit($id)
     {
 
-        $data['title'] = "Edit sop";
+        $data = [
+                'token' => $this->session->userdata('token'),
+                'id_sop' => $id,
+            ];
 
-        $data['sop'] = $this->m_sop->getsopById($id);
+        $getbyid = $this->lapan_api_library->call('sop/getsopbyid', $data);
+        $data['sop'] = $getbyid['rows'][0];
+
+        $data['title'] = "Edit sop";
 
         $this->form_validation->set_rules('judul', 'Judul', 'required');
         $this->form_validation->set_rules('nama_judul', 'Nama Judul', 'required');
@@ -60,7 +100,40 @@ class Sop extends CI_Controller
             $this->load->view('sop/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_sop->editSop();
+
+            $file_tmp = $_FILES['nama_file']['tmp_name'];
+
+            if (!empty($file_tmp) && file_exists($file_tmp)) {
+                $filename = $_FILES['nama_file']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['nama_file']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($file_tmp);
+                $file_base64 = base64_encode($data_getcontent);
+
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'nama_judul' => htmlspecialchars($this->input->post('nama_judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'nama_file' => $filename,
+                    'file_base64' => $file_base64,
+                    'file_type' => $type,
+                    'token' => $this->session->userdata('token'),
+                    'id_sop' => $this->input->post('id_sop'),
+                ];
+            }else{
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'nama_judul' => htmlspecialchars($this->input->post('nama_judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'token' => $this->session->userdata('token'),
+                    'id_sop' => $this->input->post('id_sop'),
+                ];
+            }
+
+            $update = $this->lapan_api_library->call('sop/updatesop', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             SOP telah diubah!</div>');
             redirect('sop');
@@ -69,7 +142,13 @@ class Sop extends CI_Controller
 
     function delete($id)
     {
-        $this->m_sop->deletesop($id);
+        $data = [
+            'token' => $this->session->userdata('token'),
+            'id_sop' => $id,
+        ];
+
+        $delete = $this->lapan_api_library->call('sop/deletesop', $data);
+
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             SOP telah dihapus!</div>');
         redirect('sop');

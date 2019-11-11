@@ -35,7 +35,7 @@
                                         <td><?= $ln['kategori']; ?></td>
                                         <td><?= $ln['nama_link']; ?></td>
                                         <td><?= $ln['url_web']; ?></td>
-                                        <td><img src="<?= base_url('assets/img_link/') . $ln['logo']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
+                                        <td><img src="<?= URL_API_DOWNLOAD . $ln['logo']; ?>" class="w-60 img-thumbnail" width="75px" height="75px"></td>
                                         <td>
                                             <a href="<?= base_url('Link/edit/') . $ln['id_link']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default edit-row" data-toggle="tooltip" data-original-title="Edit"><i class="icon wb-edit" aria-hidden="true"></i></a>
                                             <a href="<?= base_url('Link/delete/') . $ln['id_link']; ?>" class="btn btn-sm btn-icon btn-pure btn-default on-default remove-row" data-toggle="tooltip" data-original-title="Remove" onclick="return confirm('Anda yakin ingin menghapus?');"><i class="icon wb-trash" aria-hidden="true"></i></a>

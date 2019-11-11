@@ -18,7 +18,8 @@ class Download extends CI_Controller
         $data['title'] = "Download";
         $data['icon'] = "download";
 
-        $data['download'] = $this->m_download->getDownload();
+        $download = $this->lapan_api_library->call('download/getdownload', ['token' => $this->session->userdata('token')]);
+        $data['download'] = $download['rows'];
 
         $this->load->view('template/header.php');
         $this->load->view('download/index', $data);
@@ -35,7 +36,40 @@ class Download extends CI_Controller
             $this->load->view('download/add', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_download->addDownload();
+            $file_tmp = $_FILES['nama_file']['tmp_name'];
+
+            if (!empty($file_tmp) && file_exists($file_tmp)) {
+                $filename = $_FILES['nama_file']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['nama_file']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($file_tmp);
+                $file_base64 = base64_encode($data_getcontent);
+
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'hits' => 1,
+                    'nama_file' => $filename,
+                    'file_base64' => $file_base64,
+                    'file_type' => $type,
+                    'token' => $this->session->userdata('token'),
+                ];
+            }else{
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'hits' => 1,
+                    'nama_file' => null,
+                    'file_base64' => null,
+                    'file_type' => null,
+                    'token' => $this->session->userdata('token'),
+                ];
+            }
+
+            $insert = $this->lapan_api_library->call('download/adddownload', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             File telah ditambahkan!</div>');
             redirect('Download');
@@ -44,10 +78,15 @@ class Download extends CI_Controller
 
     public function edit($id)
     {
+        $data = [
+                'token' => $this->session->userdata('token'),
+                'id_download' => $id,
+            ];
+
+        $getbyid = $this->lapan_api_library->call('download/getdownloadbyid', $data);
+        $data['download'] = $getbyid['rows'][0];
 
         $data['title'] = "Edit Download";
-
-        $data['download'] = $this->m_download->getDownloadById($id);
 
         $this->form_validation->set_rules('judul', 'Judul', 'required');
 
@@ -57,7 +96,39 @@ class Download extends CI_Controller
             $this->load->view('download/edit', $data);
             $this->load->view('template/footer.php');
         } else {
-            $this->m_download->editDownload();
+             $file_tmp = $_FILES['nama_file']['tmp_name'];
+
+            if (!empty($file_tmp) && file_exists($file_tmp)) {
+                $filename = $_FILES['nama_file']['name'];
+                $filename = pathinfo($filename, PATHINFO_FILENAME);
+                $type = $_FILES['nama_file']['name'];
+                $ext = explode('.', $type);
+                $type = end($ext);
+                $data_getcontent = file_get_contents($file_tmp);
+                $file_base64 = base64_encode($data_getcontent);
+
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'hits' => 1,
+                    'nama_file' => $filename,
+                    'file_base64' => $file_base64,
+                    'file_type' => $type,
+                    'token' => $this->session->userdata('token'),
+                    'id_download' => $this->input->post('id_download'),
+                ];
+            }else{
+                $data = [
+                    'judul' => htmlspecialchars($this->input->post('judul', true)),
+                    'tgl_posting' => date('Y-m-d h:i:s'),
+                    'hits' => 1,
+                    'token' => $this->session->userdata('token'),
+                    'id_download' => $this->input->post('id_download'),
+                ];
+            }
+
+            $update = $this->lapan_api_library->call('download/updatedownload', $data);
+
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             File telah diubah!</div>');
             redirect('Download');
@@ -66,7 +137,13 @@ class Download extends CI_Controller
 
     function delete($id)
     {
-        $this->m_download->deleteDownload($id);
+        $data = [
+            'token' => $this->session->userdata('token'),
+            'id_download' => $id,
+        ];
+
+        $delete = $this->lapan_api_library->call('download/deletedownload', $data);
+
         $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
             File telah dihapus!</div>');
         redirect('Download');
